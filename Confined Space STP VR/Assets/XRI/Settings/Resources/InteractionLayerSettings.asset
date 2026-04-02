@@ -14,17 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_LayerNames:
   - Default
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - PPE - Helmet
+  - PPE - Gloves
+  - PPE - Shoes
+  - PPE - Harness
+  - PPE - Suit
+  - PPE - Goggles
+  - PPE - Headphones
+  - PPE - Respirator
+  - Barricade
+  - Tripod
+  - AirVent
   - 
   - 
   - 
