@@ -5,6 +5,8 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class PPEEquipSetUp : MonoBehaviour
 {
+
+    public GameObject TeleportAnchor;
     public StepManager stepManager;
 
     [Header("Audio")]
@@ -24,10 +26,23 @@ public class PPEEquipSetUp : MonoBehaviour
     [Header("Glove Visual Change")]
     public Material glovesMaterial; // assign in inspector
 
+    public PermitSpawner permitSpawner;
+    [Header("Tick Marks UI")]
+    public List<GameObject> tickMarks = new List<GameObject>();
 
+    public GameObject LeftDoorClosed;
+    public GameObject RightDoorClosed;
+    public GameObject LeftDoorOpen;
+    public GameObject RightDoorOpen;
     void OnEnable()
     {
+        LeftDoorClosed.SetActive(false);
+        RightDoorClosed.SetActive(false);
+        LeftDoorOpen.SetActive(true);
+        RightDoorOpen.SetActive(true);
+        TeleportAnchor.SetActive(true);
         equippedCount = 0;
+        permitSpawner.SpawnAtStep(0);
 
         foreach (GameObject controller in controllerVisuals)
         {
@@ -72,7 +87,7 @@ public class PPEEquipSetUp : MonoBehaviour
         {
             ApplyGloveMaterial();
         }
-
+        ActivateTick(item.ppeName);
         if (equippedCount >= ppeItems.Count)
         {
             Debug.Log("🎯 All PPE Equipped");
@@ -84,10 +99,29 @@ public class PPEEquipSetUp : MonoBehaviour
                 items.DestroyIfMarked();
             }
             StartCoroutine(PPECompleted());
+            TeleportAnchor.SetActive(false);
             stepManager.CompleteCurrentStep();
         }
 
     }
+    void ActivateTick(string ppeName)
+    {
+        foreach (GameObject tick in tickMarks)
+        {
+            if (tick == null) continue;
+
+            // Match by name (case insensitive safer)
+            if (tick.name.ToLower().Contains(ppeName.ToLower()))
+            {
+                tick.SetActive(true);
+                Debug.Log("✅ Tick Activated: " + tick.name);
+                return;
+            }
+        }
+
+        Debug.LogWarning("⚠ No matching tick found for: " + ppeName);
+    }
+
     void ApplyGloveMaterial()
     {
         if (glovesMaterial == null) return;

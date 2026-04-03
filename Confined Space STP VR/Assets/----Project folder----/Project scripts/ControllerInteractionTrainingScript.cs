@@ -47,12 +47,16 @@ public class SimpleControllerTraining : MonoBehaviour
         Joystick
     }
 
+
+    public GameObject TeleportAnchor;
     public Image fadeoutImage;
 
     public GameObject StartPanel;
     public AudioClip WelcomeClip;
     public GameObject VideoPanel;
     public AudioClip TrainingStartClip;
+
+    public bool startGettingInput = false;
     public List<Step> steps = new List<Step>();
 
     private int index = 0;
@@ -72,6 +76,7 @@ public class SimpleControllerTraining : MonoBehaviour
 
     void Start()
     {
+        TeleportAnchor.SetActive(true);
         StartCoroutine(StartCoroutineFunc());
         
     }
@@ -112,16 +117,20 @@ public class SimpleControllerTraining : MonoBehaviour
         audioManager.PlayInstruction(TrainingStartClip);
         VideoPanel.SetActive(true);
         yield return new WaitForSeconds(2f);
+        startGettingInput = true;
         foreach (var s in steps)
         {
-            s.rightInput.action?.Enable();
-            s.leftInput.action?.Enable();
+            if(startGettingInput)
+            {
+                s.rightInput.action?.Enable();
+                s.leftInput.action?.Enable();
 
-            if (s.rightRenderer != null)
-                s.rightOriginalMat = s.rightRenderer.material;
+                if (s.rightRenderer != null)
+                    s.rightOriginalMat = s.rightRenderer.material;
 
-            if (s.leftRenderer != null)
-                s.leftOriginalMat = s.leftRenderer.material;
+                if (s.leftRenderer != null)
+                    s.leftOriginalMat = s.leftRenderer.material;
+            }
         }
 
         StartStep(index);
@@ -129,71 +138,76 @@ public class SimpleControllerTraining : MonoBehaviour
 
     void Update()
     {
-        if (index >= steps.Count) return;
-
-        Step step = steps[index];
-
-        float rightVal = 0f;
-        float leftVal = 0f;
-
-        Vector2 rightAxis = Vector2.zero;
-        Vector2 leftAxis = Vector2.zero;
-
-        if (step.type == AnimationType.Joystick)
+        if (startGettingInput)
         {
-            rightAxis = step.rightInput.action.ReadValue<Vector2>();
-            leftAxis = step.leftInput.action.ReadValue<Vector2>();
-        }
-        else
-        {
-            rightVal = step.rightInput.action.ReadValue<float>();
-            leftVal = step.leftInput.action.ReadValue<float>();
-        }
+            if (index >= steps.Count) return;
 
-        bool rightUsed = step.type == AnimationType.Joystick
-            ? rightAxis.magnitude > 0.2f
-            : rightVal > 0.1f;
+            Step step = steps[index];
 
-        bool leftUsed = step.type == AnimationType.Joystick
-            ? leftAxis.magnitude > 0.2f
-            : leftVal > 0.1f;
+            float rightVal = 0f;
+            float leftVal = 0f;
 
-        // ✅ PLAY SFX ON FIRST INPUT
-        if (rightUsed && !rightSfxPlayed)
-        {
-            audioManager?.PlaySFX(step.inputSFX);
-            rightSfxPlayed = true;
-        }
+            Vector2 rightAxis = Vector2.zero;
+            Vector2 leftAxis = Vector2.zero;
 
-        if (leftUsed && !leftSfxPlayed)
-        {
-            audioManager?.PlaySFX(step.inputSFX);
-            leftSfxPlayed = true;
-        }
+            if (step.type == AnimationType.Joystick)
+            {
+                rightAxis = step.rightInput.action.ReadValue<Vector2>();
+                leftAxis = step.leftInput.action.ReadValue<Vector2>();
+            }
+            else
+            {
+                rightVal = step.rightInput.action.ReadValue<float>();
+                leftVal = step.leftInput.action.ReadValue<float>();
+            }
 
-        if (rightUsed && leftUsed && !highlightRemoved)
-        {
-            Highlight(step, false);
-            highlightRemoved = true;
+            bool rightUsed = step.type == AnimationType.Joystick
+                ? rightAxis.magnitude > 0.2f
+                : rightVal > 0.1f;
 
-            if (demoRoutine != null)
-                StopCoroutine(demoRoutine);
-        }
+            bool leftUsed = step.type == AnimationType.Joystick
+                ? leftAxis.magnitude > 0.2f
+                : leftVal > 0.1f;
 
-        Animate(step, rightVal, rightAxis, step.rightTarget);
-        Animate(step, leftVal, leftAxis, step.leftTarget);
+            // ✅ PLAY SFX ON FIRST INPUT
+            if (rightUsed && !rightSfxPlayed)
+            {
+                audioManager?.PlaySFX(step.inputSFX);
+                rightSfxPlayed = true;
+            }
 
-        bool rightComplete = step.type == AnimationType.Joystick
-            ? rightAxis.magnitude > 0.8f
-            : step.rightInput.action.IsPressed();
+            if (leftUsed && !leftSfxPlayed)
+            {
+                audioManager?.PlaySFX(step.inputSFX);
+                leftSfxPlayed = true;
+            }
 
-        bool leftComplete = step.type == AnimationType.Joystick
-            ? leftAxis.magnitude > 0.8f
-            : step.leftInput.action.IsPressed();
+            if (rightUsed && leftUsed && !highlightRemoved)
+            {
+                Highlight(step, false);
+                highlightRemoved = true;
 
-        if (rightComplete && leftComplete)
-        {
-            NextStep();
+                if (demoRoutine != null)
+                    StopCoroutine(demoRoutine);
+            }
+
+            Animate(step, rightVal, rightAxis, step.rightTarget);
+            Animate(step, leftVal, leftAxis, step.leftTarget);
+
+            bool rightComplete = step.type == AnimationType.Joystick
+                ? rightAxis.magnitude > 0.8f
+                : step.rightInput.action.IsPressed();
+
+            bool leftComplete = step.type == AnimationType.Joystick
+                ? leftAxis.magnitude > 0.8f
+                : step.leftInput.action.IsPressed();
+
+            if (rightComplete && leftComplete)
+            {
+                NextStep();
+                ResetTransform(step.rightTarget, step.type);
+                ResetTransform(step.leftTarget, step.type);
+            }
         }
     }
 
@@ -217,7 +231,7 @@ public class SimpleControllerTraining : MonoBehaviour
         if (index >= steps.Count)
         {
             Debug.Log("Training Finished");
-
+            TeleportAnchor.SetActive(false);
             // ✅ Notify Step Manager
             stepManager.CompleteCurrentStep();
             VideoPanel.SetActive(false);

@@ -1,217 +1,5 @@
-//using GogoGaga.OptimizedRopesAndCables;
-//using UnityEngine;
-//using UnityEngine.XR.Interaction.Toolkit;
-//using UnityEngine.XR.Interaction.Toolkit.Interactables;
-//using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
-//public class ConfinedSetupStep : MonoBehaviour
-//{
-//    [Header("Manager")]
-//    public StepManager stepManager;
 
-//    [Header("Sockets")]
-//    public XRSocketInteractor barricadeSocket;
-//    public XRSocketInteractor tripodSocket;
-//    public XRSocketInteractor ventSocket;
-
-//    private bool barricadePlaced = false;
-//    private bool tripodPlaced = false;
-//    private bool ventPlaced = false;
-
-//    public Transform HookedToPlayer;
-//    public Rope ropescript;
-
-//    public AudioClip ManHoleDesend;
-//    public Transform ManHoleEntry;
-//    public Transform ManHoleExit;
-
-//    [Header("Gas Detector")]
-//    public XRGrabInteractable gasDetector; 
-
-//    private bool isHoldingDetector = false;
-//    private bool gasCheckStarted = false;
-
-//    private int subStep = 0;
-
-//    void OnEnable()
-//    {
-//        SetupListeners();
-//    }
-
-//    void SetupListeners()
-//    {
-//        barricadeSocket.selectEntered.AddListener(OnBarricadePlaced);
-//        tripodSocket.selectEntered.AddListener(OnTripodPlaced);
-//        ventSocket.selectEntered.AddListener(OnVentPlaced);
-
-//        // 🔥 Gas detector grab detection
-//        if (gasDetector != null)
-//        {
-//            gasDetector.selectEntered.AddListener(OnDetectorGrabbed);
-//            gasDetector.selectExited.AddListener(OnDetectorReleased);
-//        }
-//    }
-
-//    // ---------------------------
-//    // 🔷 SUB STEP 1 - ENTER AREA
-//    // ---------------------------
-//    public void OnEnterManholeArea()
-//    {
-//        Debug.Log("Entered Manhole Area");
-//        subStep = 1;
-//    }
-
-//    // ---------------------------
-//    // 🔷 SUB STEP 2 - PLACE OBJECTS
-//    // ---------------------------
-//    void OnBarricadePlaced(SelectEnterEventArgs args)
-//    {
-//        barricadePlaced = true;
-//        CheckAllPlaced();
-//    }
-
-//    void OnTripodPlaced(SelectEnterEventArgs args)
-//    {
-//        tripodPlaced = true;
-//        CheckAllPlaced();
-//    }
-
-//    void OnVentPlaced(SelectEnterEventArgs args)
-//    {
-//        ventPlaced = true;
-//        CheckAllPlaced();
-//    }
-
-//    void CheckAllPlaced()
-//    {
-//        if (barricadePlaced && tripodPlaced && ventPlaced)
-//        {
-//            Debug.Log("All Setup Done");
-//            SubStep_GasCheck();
-//        }
-//    }
-
-//    // ---------------------------
-//    // 🔷 SUB STEP 3 - GAS CHECK
-//    // ---------------------------
-//    public void SubStep_GasCheck()
-//    {
-//        subStep = 2;
-
-//        Debug.Log("Grab the Gas Detector to Check Air Quality");
-//    }
-
-//    void OnDetectorGrabbed(SelectEnterEventArgs args)
-//    {
-//        if (subStep != 2) return;
-
-//        Debug.Log("Gas Detector Grabbed");
-
-//        isHoldingDetector = true;
-
-//        if (!gasCheckStarted)
-//        {
-//            gasCheckStarted = true;
-//            Invoke(nameof(GasCheckComplete), 5f); // ⏱️ wait 3 seconds
-//        }
-//    }
-
-//    void OnDetectorReleased(SelectExitEventArgs args)
-//    {
-//        isHoldingDetector = false;
-//    }
-
-//    void GasCheckComplete()
-//    {
-//        // Ensure still holding (optional check)
-//        if (!isHoldingDetector)
-//        {
-//            Debug.Log("Detector released too early - retry");
-//            gasCheckStarted = false;
-//            return;
-//        }
-
-//        Debug.Log("Air is SAFE ✅");
-
-//        subStep = 3;
-//    }
-
-//    // ---------------------------
-//    // 🔷 SUB STEP 4 - HOOK PLAYER
-//    // ---------------------------
-//    public void OnPlayerReachedHookPoint()
-//    {
-//        if (subStep != 3) return;
-
-//        Debug.Log("Player ready for hook");
-
-//        SubStep_HookPlayer();
-//    }
-
-//    void SubStep_HookPlayer()
-//    {
-//        subStep = 4;
-
-//        Debug.Log("Hooking Player...");
-
-//        Invoke(nameof(SubStep_HookDone), 2f);
-//    }
-
-//    void SubStep_HookDone()
-//    {
-//        ropescript.SetEndPoint(HookedToPlayer); 
-//        Debug.Log("Player Hooked");
-//        subStep = 5;
-//    }
-
-//    // ---------------------------
-//    // 🔷 SUB STEP 5 - DESCEND
-//    // ---------------------------
-//    public void OnPlayerStartDescending()
-//    {
-//        if (subStep != 5) return;
-
-//        Debug.Log("Player Descending");
-//        subStep = 6;
-//    }
-
-//    // ---------------------------
-//    // 🔷 SUB STEP 6 - REACH BOTTOM
-//    // ---------------------------
-//    public void OnReachedBottom()
-//    {
-//        if (subStep != 6) return;
-
-//        Debug.Log("Reached Bottom");
-
-//        CompleteStep();
-//    }
-
-//    // ---------------------------
-//    // 🔷 COMPLETE STEP
-//    // ---------------------------
-//    void CompleteStep()
-//    {
-//        Debug.Log("Confined Setup Completed");
-//        stepManager.CompleteCurrentStep();
-//    }
-
-//    // ---------------------------
-//    // CLEANUP
-//    // ---------------------------
-//    private void OnDestroy()
-//    {
-//        barricadeSocket.selectEntered.RemoveListener(OnBarricadePlaced);
-//        tripodSocket.selectEntered.RemoveListener(OnTripodPlaced);
-//        ventSocket.selectEntered.RemoveListener(OnVentPlaced);
-
-//        if (gasDetector != null)
-//        {
-//            gasDetector.selectEntered.RemoveListener(OnDetectorGrabbed);
-//            gasDetector.selectExited.RemoveListener(OnDetectorReleased);
-//        }
-//    }
-//}
 using GogoGaga.OptimizedRopesAndCables;
 using TMPro;
 using UnityEngine;
@@ -221,6 +9,9 @@ using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 public class ConfinedSetupStep : MonoBehaviour
 {
+
+    public GameObject TeleportAnchor1;
+    public GameObject TeleportAnchor2;
     [Header("Manager")]
     public StepManager stepManager;
 
@@ -239,7 +30,7 @@ public class ConfinedSetupStep : MonoBehaviour
 
     public AudioManager audiomanager;
 
-    [Header("Manhole")]
+    [Header("Audio Clips")]
     public AudioClip BarricadeClip;
     public AudioClip TripodClip;
     public AudioClip AirVentClip;
@@ -248,7 +39,7 @@ public class ConfinedSetupStep : MonoBehaviour
     public AudioClip ClimbDownManHoleClip;
     public AudioClip ManHoleExitReachedClip;
 
-
+    [Header("Manhole")]
     public Transform ManHoleEntry;
     public Transform ManHoleExit;
     public Transform player;
@@ -263,12 +54,22 @@ public class ConfinedSetupStep : MonoBehaviour
     public GameObject HarnessAttachToPlayer;
 
     private int subStep = 0;
-    private bool hasReachedExit = false; // 🔥 prevent multiple triggers
+    private bool hasReachedExit = false;
 
+    public PermitSpawner permitSpawner;
 
+    public GameObject Oxygen;
+    public GameObject SulphurContent;
+    public GameObject AreaSecured;
+    public GameObject Lifeline;
+    public GameObject Guard;
+    public GameObject AirVent;
+    public GameObject GasDetectorReadings;
     void OnEnable()
     {
+        TeleportAnchor1.SetActive(true);
         SetupListeners();
+        permitSpawner.SpawnAtStep(1);
     }
 
     void Update()
@@ -276,16 +77,16 @@ public class ConfinedSetupStep : MonoBehaviour
         CheckExitDistance();
     }
 
-    // 🔥 CONTINUOUS EXIT CHECK
+    // ---------------------------
+    // 🔥 EXIT CHECK
+    // ---------------------------
     void CheckExitDistance()
     {
-        if (subStep != 6 || hasReachedExit) return;
+        if (subStep != 5 || hasReachedExit) return;
 
         if (player == null || ManHoleExit == null) return;
 
         float dist = Vector3.Distance(player.position, ManHoleExit.position);
-
-        // Optional debug
         Debug.DrawLine(player.position, ManHoleExit.position, Color.green);
 
         if (dist <= exitCheckDistance)
@@ -309,64 +110,27 @@ public class ConfinedSetupStep : MonoBehaviour
     }
 
     // ---------------------------
-    // 🔷 SUB STEP 1 - ENTER AREA
+    // 🔷 START → GAS CHECK FIRST
     // ---------------------------
     public void OnEnterManholeArea()
     {
-        Debug.Log("Entered Manhole Area");
-        subStep = 1;
+        Debug.Log("Start → Gas Check First");
+        SubStep_GasCheck();
     }
 
     // ---------------------------
-    // 🔷 SUB STEP 2 - PLACE OBJECTS
-    // ---------------------------
-
-    public void PlayAudioForBarricade()
-    {
-        audiomanager.PlayInstruction(BarricadeClip);
-    }
-    void OnBarricadePlaced(SelectEnterEventArgs args)
-    {
-        barricadePlaced = true;
-        audiomanager.PlayInstruction(TripodClip);
-        CheckAllPlaced();
-    }
-
-    void OnTripodPlaced(SelectEnterEventArgs args)
-    {
-        tripodPlaced = true;
-        audiomanager.PlayInstruction(AirVentClip);
-        CheckAllPlaced();
-    }
-
-    void OnVentPlaced(SelectEnterEventArgs args)
-    {
-        ventPlaced = true;
-        audiomanager.PlayInstruction(GasCheckClip);
-        CheckAllPlaced();
-    }
-
-    void CheckAllPlaced()
-    {
-        if (barricadePlaced && tripodPlaced && ventPlaced)
-        {
-            Debug.Log("All Setup Done");
-            SubStep_GasCheck();
-        }
-    }
-
-    // ---------------------------
-    // 🔷 SUB STEP 3 - GAS CHECK
+    // 🔷 STEP 1 - GAS CHECK
     // ---------------------------
     public void SubStep_GasCheck()
     {
-        subStep = 2;
+        subStep = 1;
         Debug.Log("Grab the Gas Detector to Check Air Quality");
+        audiomanager.PlayInstruction(GasCheckClip);
     }
 
     void OnDetectorGrabbed(SelectEnterEventArgs args)
     {
-        if (subStep != 2) return;
+        if (subStep != 1) return;
 
         Debug.Log("Gas Detector Grabbed");
 
@@ -392,25 +156,72 @@ public class ConfinedSetupStep : MonoBehaviour
             gasCheckStarted = false;
             return;
         }
-        audiomanager.PlayInstruction(CarabinerHook);
+        GasDetectorReadings.SetActive(true);
         Debug.Log("Air is SAFE ✅");
-        subStep = 3;
+        audiomanager.PlayInstruction(BarricadeClip);
+        Oxygen.SetActive(true);
+        SulphurContent.SetActive(true);
+        subStep = 2; // 👉 Move to setup
     }
 
     // ---------------------------
-    // 🔷 SUB STEP 4 - HOOK PLAYER
+    // 🔷 STEP 2 - SETUP AREA
+    // ---------------------------
+    void OnBarricadePlaced(SelectEnterEventArgs args)
+    {
+        if (subStep != 2) return;
+
+        barricadePlaced = true;
+        audiomanager.PlayInstruction(TripodClip);
+        AreaSecured.SetActive(true);
+        CheckAllPlaced();
+    }
+
+    void OnTripodPlaced(SelectEnterEventArgs args)
+    {
+        if (subStep != 2) return;
+
+        tripodPlaced = true;
+        audiomanager.PlayInstruction(AirVentClip);
+        CheckAllPlaced();
+    }
+
+    void OnVentPlaced(SelectEnterEventArgs args)
+    {
+        if (subStep != 2) return;
+
+        ventPlaced = true;
+        audiomanager.PlayInstruction(CarabinerHook);
+        AirVent.SetActive(true);
+        CheckAllPlaced();
+    }
+
+    void CheckAllPlaced()
+    {
+        if (barricadePlaced && tripodPlaced && ventPlaced)
+        {
+            Debug.Log("All Setup Done");
+            TeleportAnchor1.SetActive(false);
+            TeleportAnchor2.SetActive(true);
+            //SubStep_HookPlayer();
+        }
+    }
+
+    // ---------------------------
+    // 🔷 STEP 3 - HOOK PLAYER
     // ---------------------------
     public void OnPlayerReachedHookPoint()
     {
-        if (subStep != 3) return;
+        //if (subStep != 3) return;
 
         Debug.Log("Player ready for hook");
+        Guard.SetActive(true);
         SubStep_HookPlayer();
     }
 
     void SubStep_HookPlayer()
     {
-        subStep = 4;
+        subStep = 3;
 
         Debug.Log("Hooking Player...");
         Invoke(nameof(SubStep_HookDone), 2f);
@@ -420,29 +231,34 @@ public class ConfinedSetupStep : MonoBehaviour
     {
         ropescript.SetEndPoint(HookedToPlayer);
         Debug.Log("Player Hooked");
+        Lifeline.SetActive(true);
         audiomanager.PlayInstruction(ClimbDownManHoleClip);
+
+        subStep = 4;
+    }
+
+    // ---------------------------
+    // 🔷 STEP 4 - DESCEND
+    // ---------------------------
+    public void OnPlayerStartDescending()
+    {
+        if (subStep != 4) return;
+
+        Debug.Log("Player Descending");
         subStep = 5;
     }
 
     // ---------------------------
-    // 🔷 SUB STEP 5 - DESCEND
-    // ---------------------------
-    public void OnPlayerStartDescending()
-    {
-        if (subStep != 5) return;
-
-        Debug.Log("Player Descending");
-        subStep = 6;
-    }
-
-    // ---------------------------
-    // 🔷 SUB STEP 6 - REACH EXIT
+    // 🔷 STEP 5 - EXIT REACHED
     // ---------------------------
     void OnReachedExit()
     {
         Debug.Log("Reached Manhole Exit");
+
         audiomanager.PlayInstruction(ManHoleExitReachedClip);
+
         HarnessAttachToPlayer.GetComponent<AttachToBody>().enabled = true;
+
         CompleteStep();
     }
 
@@ -452,7 +268,9 @@ public class ConfinedSetupStep : MonoBehaviour
     void CompleteStep()
     {
         Debug.Log("Confined Setup Completed");
+
         stepManager.CompleteCurrentStep();
+        TeleportAnchor2.SetActive(false);
         subStep = -1;
     }
 

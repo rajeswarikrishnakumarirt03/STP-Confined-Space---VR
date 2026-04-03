@@ -8,6 +8,8 @@ using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 public class AnerobicTankCleaning : MonoBehaviour
 {
+
+    public GameObject TeleportAnchor;
     public Collider tankCollider;
     public XRBaseInteractable climbInteractable;
 
@@ -22,6 +24,7 @@ public class AnerobicTankCleaning : MonoBehaviour
 
     private void OnEnable()
     {
+        TeleportAnchor.SetActive(true);
         if (climbInteractable != null)
         {
             climbInteractable.selectEntered.AddListener(OnGrab);
